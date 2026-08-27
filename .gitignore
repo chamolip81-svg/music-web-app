@@ -1,0 +1,14 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Local environments
+venv/
+.venv/
+env/
+
+# Shadowed ytmusicapi cloned directory (installed via requirements.txt instead)
+ytmusicapi/
+ytmusicapi_repo/

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Auralyn - A sleek, high-fidelity music player powered by YouTube Music API. Experience seamless streaming, lyrics, and deep search.">
+    <meta name="theme-color" content="#0d0b18">
+    <title>Auralyn - Stream Your Music</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Glow Backdrops -->
+    <div class="glow-bg">
+        <div class="glow-sphere sphere-1"></div>
+        <div class="glow-sphere sphere-2"></div>
+        <div class="glow-sphere sphere-3"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="app-container">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="app-sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-wand-magic-sparkles brand-logo"></i>
+                <h1 class="brand-name">Auralyn</h1>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <button class="menu-item active" id="btn-nav-home" onclick="switchView('home')">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Home</span>
+                </button>
+                <button class="menu-item" id="btn-nav-search" onclick="switchView('search')">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span>Search</span>
+                </button>
+                <button class="menu-item" id="btn-nav-charts" onclick="switchView('charts')">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Charts</span>
+                </button>
+            </nav>
+            
+            <div class="library-header">
+                <h3>Now Playing Queue</h3>
+            </div>
+            <div class="queue-container" id="sidebar-queue">
+                <p class="empty-queue-msg">Queue is empty. Select a song to start listening!</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="app-main">
+            <!-- Search & Navigation Header -->
+            <header class="app-header">
+                <div class="header-left">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="search-input" placeholder="Search songs, artists, albums, playlists..." onkeydown="handleSearchKey(event)">
+                        <button class="search-btn" onclick="performSearch()">Search</button>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="user-profile">
+                        <i class="fa-regular fa-circle-user profile-icon"></i>
+                        <span>Guest Listener</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dynamic Views Wrapper -->
+            <div class="view-content" id="view-content">
+                
+                <!-- HOME VIEW -->
+                <section class="content-view active" id="view-home">
+                    <div class="welcome-banner">
+                        <div class="welcome-text">
+                            <h2>Welcome to Auralyn</h2>
+                            <p>Discover personalized releases, trending charts, and explore high-fidelity playback.</p>
+                        </div>
+                    </div>
+                    <div id="home-sections">
+                        <!-- Loading spinner -->
+                        <div class="loader-container">
+                            <div class="glow-spinner"></div>
+                            <p>Tuning into YouTube Music...</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SEARCH VIEW -->
+                <section class="content-view" id="view-search">
+                    <div class="search-filters">
+                        <button class="filter-chip active" onclick="setSearchFilter(null)">All</button>
+                        <button class="filter-chip" onclick="setSearchFilter('songs')">Songs</button>
+                        <button class="filter-chip" onclick="setSearchFilter('albums')">Albums</button>
+                        <button class="filter-chip" onclick="setSearchFilter('artists')">Artists</button>
+                        <button class="filter-chip" onclick="setSearchFilter('playlists')">Playlists</button>
+                    </div>
+                    <h2 class="section-title" id="search-results-title">Search Results</h2>
+                    <div id="search-results-container" class="grid-layout">
+                        <p class="search-prompt">Type in the search bar above to look up music.</p>
+                    </div>
+                </section>
+
+                <!-- CHARTS VIEW -->
+                <section class="content-view" id="view-charts">
+                    <h2 class="section-title">Trending & Charts</h2>
+                    <div id="charts-container">
+                        <div class="loader-container">
+                            <div class="glow-spinner"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- DETAIL VIEW (Album, Playlist, Artist) -->
+                <section class="content-view" id="view-details">
+                    <button class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                    <div id="details-container">
+                        <!-- Filled dynamically -->
+                    </div>
+                </section>
+
+                <!-- LYRICS VIEW -->
+                <section class="content-view" id="view-lyrics">
+                    <div class="lyrics-header">
+                        <h2>Lyrics</h2>
+                    </div>
+                    <div class="lyrics-body" id="lyrics-content">
+                        <p class="lyrics-placeholder">No lyrics available. Play a song first!</p>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Music Player Bottom Console -->
+    <footer class="app-player">
+        <div class="player-left">
+            <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=120&auto=format&fit=crop" id="player-track-img" alt="Track Cover" class="track-art">
+            <div class="track-info">
+                <span class="track-title" id="player-track-title">Not Playing</span>
+                <span class="track-artist" id="player-track-artist">Select a song</span>
+            </div>
+            <button class="player-like-btn" id="player-like-btn" onclick="toggleLike()">
+                <i class="fa-regular fa-heart"></i>
+            </button>
+        </div>
+
+        <div class="player-center">
+            <div class="player-controls">
+                <button class="control-btn" title="Shuffle" id="player-shuffle" onclick="toggleShuffle()">
+                    <i class="fa-solid fa-shuffle"></i>
+                </button>
+                <button class="control-btn" title="Previous" id="player-prev" onclick="playPrevious()">
+                    <i class="fa-solid fa-backward-step"></i>
+                </button>
+                <button class="control-btn play-pause-btn" title="Play/Pause" id="player-play" onclick="togglePlay()">
+                    <i class="fa-solid fa-play"></i>
+                </button>
+                <button class="control-btn" title="Next" id="player-next" onclick="playNext()">
+                    <i class="fa-solid fa-forward-step"></i>
+                </button>
+                <button class="control-btn" title="Repeat" id="player-repeat" onclick="toggleRepeat()">
+                    <i class="fa-solid fa-repeat"></i>
+                </button>
+            </div>
+            <div class="progress-container">
+                <span class="time-stamp" id="time-current">0:00</span>
+                <div class="slider-wrapper">
+                    <input type="range" id="progress-slider" min="0" max="100" value="0" oninput="seekTrack(this.value)">
+                    <div class="progress-bar-fill" id="progress-bar-fill"></div>
+                </div>
+                <span class="time-stamp" id="time-duration">0:00</span>
+            </div>
+        </div>
+
+        <div class="player-right">
+            <button class="control-btn" title="Lyrics" id="player-lyrics-toggle" onclick="showLyricsTab()">
+                <i class="fa-solid fa-microphone-lines"></i>
+            </button>
+            <div class="volume-container">
+                <i class="fa-solid fa-volume-high" id="volume-icon"></i>
+                <div class="slider-wrapper volume-slider-wrapper">
+                    <input type="range" id="volume-slider" min="0" max="100" value="70" oninput="changeVolume(this.value)">
+                    <div class="volume-bar-fill" id="volume-bar-fill"></div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Hidden YouTube Player Container (Needed by YT IFrame API) -->
+    <div id="yt-player-container" style="position: absolute; width: 1px; height: 1px; left: -9999px; top: -9999px; overflow: hidden;">
+        <div id="yt-player"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="app.js"></script>
+</body>
+</html>
